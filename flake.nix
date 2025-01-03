@@ -6,6 +6,23 @@
     src = ./src;
     pkgs = (import nixpkgs) { inherit system; };
   in {
+
+    
+    headers = pkgs.stdenv.mkDerivation {
+      inherit name src;
+      buildPhase = "";
+      installPhase = "cp $src/lib.h $out/${name}.h"
+    };
+    lib = pkgs.stdenv.mkDerivation {
+      inherit name src;
+      buildPhase = ''
+        gcc -c -O2 -o ./lib.o $src/lib.c
+        ar rpc ./lib.a ./lib.o
+      '';
+      installPhase = "cp ./lib.a $out/${name}.a";
+    };
+
+    
     packages."${system}" = let
       # expects a .c file of same name in $src/
       modules = [
