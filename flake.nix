@@ -11,7 +11,10 @@
     headers = pkgs.stdenv.mkDerivation {
       inherit name src;
       buildPhase = "";
-      installPhase = "cp $src/lib.h $out/${name}.h";
+      installPhase = ''
+        mkdir -p $out/lib
+        cp $src/lib.h $out/lib/${name}.h
+      '';
     };
     lib = pkgs.stdenv.mkDerivation {
       inherit name src;
