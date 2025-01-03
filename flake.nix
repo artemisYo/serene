@@ -17,7 +17,7 @@
       inherit name src;
       buildPhase = ''
         gcc -c -O2 -o ./lib.o $src/lib.c
-        ar rpc ./lib.a ./lib.o
+        ar rcs ./lib.a ./lib.o
       '';
       installPhase = "cp ./lib.a $out/${name}.a";
     };
