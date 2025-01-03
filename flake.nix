@@ -33,6 +33,7 @@
       # expects a .c file of same name in $src/
       modules = [
         "tests"
+        "lib"
       ];
       debugOpts = "-Wall -Wextra -g -O0";
       releaseOpts = "-O2";
