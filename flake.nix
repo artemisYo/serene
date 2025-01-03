@@ -19,7 +19,10 @@
         gcc -c -O2 -o ./lib.o $src/lib.c
         ar rcs ./lib.a ./lib.o
       '';
-      installPhase = "cp ./lib.a $out/${name}.a";
+      installPhase = ''
+        mkdir -p $out/lib
+        cp ./lib.a $out/lib/${name}.a
+      '';
     };
 
     
