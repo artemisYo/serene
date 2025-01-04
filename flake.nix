@@ -23,15 +23,15 @@
       };
       default = pkgs.stdenv.mkDerivation {
         inherit name src;
-        outputs = [ "out" "dev" ];
+        outputs = [ "out" ];
         buildPhase = ''
           gcc -c -O2 -o ./lib.o $src/lib.c
           ar rcs ./lib.a ./lib.o
         '';
         installPhase = ''
-          mkdir -p $dev/include
+          mkdir -p $out/include
           mkdir -p $out/lib 
-          cp $src/lib.h $dev/include/${name}.h
+          cp $src/lib.h $out/include/${name}.h
           cp ./lib.a $out/lib/${name}.a
         '';
       };
