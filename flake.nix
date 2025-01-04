@@ -6,84 +6,40 @@
     src = ./src;
     pkgs = (import nixpkgs) { inherit system; };
   in {
-
-    
-    headers = pkgs.stdenv.mkDerivation {
-      inherit name src;
-      buildPhase = "";
-      installPhase = ''
-        mkdir -p $out/lib
-        cp $src/lib.h $out/lib/${name}.h
-      '';
-    };
-    lib = pkgs.stdenv.mkDerivation {
-      inherit name src;
-      buildPhase = ''
-        gcc -c -O2 -o ./lib.o $src/lib.c
-        ar rcs ./lib.a ./lib.o
-      '';
-      installPhase = ''
-        mkdir -p $out/lib
-        cp ./lib.a $out/lib/${name}.a
-      '';
-    };
-
-    
-    packages."${system}" = let
-      # expects a .c file of same name in $src/
-      modules = [
-        "tests"
-        "lib"
-      ];
-      debugOpts = "-Wall -Wextra -g -O0";
-      releaseOpts = "-O2";
-      commonBuildInputs = [ pkgs.gcc ];
-      
-      comp = (isDebug:
-        "gcc -c"
-        + " " + (if isDebug then debugOpts else releaseOpts)
-        + " " + pkgs.lib.concatStrings
-          (pkgs.lib.intersperse " "
-            (map (m: "$src/" + m + ".c") modules))
-      );
-      link = (isDebug:
-        "gcc -o ./main"
-        + " " + (if isDebug then debugOpts else releaseOpts)
-        + " " + pkgs.lib.concatStrings
-          (pkgs.lib.intersperse " "
-            (map (m: "./" + m + ".o") modules))
-      );
-      installPhase = ''
-        mkdir -p "$out/bin"
-        cp ./main "$out/bin/${name}"
-      '';
-    in {
-      debug = pkgs.stdenv.mkDerivation {
-        inherit name src installPhase;
+    packages."${system}" = {
+      testing = pkgs.stdenv.mkDerivation {
+        inherit name src;
         dontStrip = true;
-        buildInputs = commonBuildInputs;
-        buildPhase = ''
-          ${comp true}
-          ${link true}
+        buildInputs = [ pkgs.gcc ];
+        buildPhase = let
+          devbuildOpts = "-Wall -Wextra -g -O0";
+        in ''
+          gcc -o ./main ${devbuildOpts} $src/tests.c $src/lib.c
+        '';
+        installPhase = ''
+          mkdir -p "$out/bin"
+          cp ./main "$out/bin/${name}"
         '';
       };
       default = pkgs.stdenv.mkDerivation {
-        inherit name src installPhase;
-        nativeBuildInputs = commonBuildInputs;
+        inherit name src;
+        outputs = [ "out" "dev" ];
         buildPhase = ''
-          ${comp false}
-          ${link false}
+          gcc -c -O2 -o ./lib.o $src/lib.c
+          ar rcs ./lib.a ./lib.o
+        '';
+        installPhase = ''
+          mkdir -p $dev/include
+          mkdir -p $out/lib 
+          cp $src/lib.h $dev/include/${name}.h
+          cp ./lib.a $out/lib/${name}.a
         '';
       };
     };
     apps."${system}" = {
-      debug = {
-        type = "app";
-        program = "${self.packages."${system}".debug}/bin/${name}";
-      };
       default = {
         type = "app";
-        program = "${self.packages."${system}".default}/bin/${name}";
+        program = "${self.packages."${system}".testing}/bin/${name}";
       };
     };
   };
