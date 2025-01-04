@@ -4,6 +4,8 @@
 #include <stddef.h>
 
 #define serene_alloc(a, T) a.alloc(a.ctx, sizeof(T))
+#define serene_calloc(a, n, T) a.alloc(a.ctx, n * sizeof(T))
+#define serene_balloc(a, b) a.alloc(a.ctx, b)
 
 struct Allocator {
     void* ctx;
