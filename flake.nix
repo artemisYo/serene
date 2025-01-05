@@ -42,5 +42,12 @@
         program = "${self.packages."${system}".testing}/bin/${name}";
       };
     };
+    devShells."${system}" = {
+      default = pkgs.stdenv.mkDerivation {
+        inherit name;
+        src = ./.;
+        buildInputs = [ pkgs.clang-tools ];
+      };
+    };
   };
 }
