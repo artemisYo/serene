@@ -61,6 +61,9 @@ struct serene_Trea {
     struct serene_Trea_Sub* current;
 };
 
+#define serene_trealloc(a, T) ((T*) serene_Trea_alloc(a, serene_meta(T)))
+#define serene_trenalloc(a, n, T) ((T*) serene_Trea_alloc(a, serene_nmeta(n, T)))
+#define serene_tretalloc(a, s, T) ((T*) serene_Trea_alloc(a, serene_tmeta(s, T)))
 
 struct serene_Allocator serene_Trea_dyn(struct serene_Trea*);
 void* serene_Trea_alloc(struct serene_Trea*, struct serene_Ptrmeta);
