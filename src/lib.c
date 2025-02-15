@@ -137,6 +137,8 @@ struct serene_Trea serene_Trea_init(struct serene_Allocator backing) {
 }
 
 void serene_Trea_deinit(struct serene_Trea this) {
+    // doesn't work :KEKW:
+    return;
     if (!this.current) return;
     uint16_t gen = this.current->meta.gen;
     struct serene_Trea_Sub* head = this.current;
